@@ -53,7 +53,10 @@ def parenthesisRight(src: str) -> bool:
     return True
 
 
-def sintaxChecker(tree) -> None:
+def runCode(tree) -> None:
+    # dfs from left to right, emulate code running
+    # any var creation, change of definition must go through to emulator.py to the supported functions
+
     pass
 
 
@@ -75,4 +78,4 @@ def init() -> None:
 
 init()
 
-print("Code's sintaxis is wrong")
+print("Code's syntaxis is wrong")
