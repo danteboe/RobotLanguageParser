@@ -50,8 +50,24 @@ def createTree(src: str) -> dict:
 
 
 def parenthesisRight(src: str) -> bool:
-    return True
+    
+    l_parenthesis = 0
+    for c in src:
+        if c=='(':
+            l_parenthesis+=1
+        elif c==')':
+            l_parenthesis-=1
+        if l_parenthesis<0:
+            print("Invalid syntax: closing parentheis ')' does not have respective opening parentheis '('")
+            return False
+        
+    if l_parenthesis>0:
+        print('Invalid syntax: Unclosed parenthesis.')
+        return False
+    else:
+        return True
 
+#print(parenthesisRight("()"))
 
 def runCode(tree) -> None:
     # dfs from left to right, emulate code running
