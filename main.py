@@ -64,7 +64,7 @@ def parenthesisRight(src: str) -> bool:
     if l_parenthesis>0:
         print('Invalid syntax: Unclosed parenthesis.')
         return False
-    else:
+    elif l_parenthesis==0:
         return True
 
 #print(parenthesisRight("()"))
