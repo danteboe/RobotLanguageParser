@@ -50,30 +50,38 @@ def createTree(src: str) -> dict:
 
 
 def parenthesisRight(src: str) -> bool:
-    
     l_parenthesis = 0
     for c in src:
-        if c=='(':
-            l_parenthesis+=1
-        elif c==')':
-            l_parenthesis-=1
-        if l_parenthesis<0:
-            print("Invalid syntax: closing parentheis ')' does not have respective opening parentheis '('")
+        if c == "(":
+            l_parenthesis += 1
+        elif c == ")":
+            l_parenthesis -= 1
+        if l_parenthesis < 0:
+            print(
+                "Invalid syntax: closing parentheis ')' does not have respective opening parentheis '('"
+            )
             return False
-        
-    if l_parenthesis>0:
-        print('Invalid syntax: Unclosed parenthesis.')
+
+    if l_parenthesis > 0:
+        print("Invalid syntax: Unclosed parenthesis.")
         return False
-    elif l_parenthesis==0:
+    elif l_parenthesis == 0:
         return True
 
-#print(parenthesisRight("()"))
 
-def runCode(tree) -> None:
-    # dfs from left to right, emulate code running
-    # any var creation, change of definition must go through to emulator.py to the supported functions
+def dfs(tree, depth):
+    if not checkSintax(tree["value"]):
+        print("Code's syntaxis is wrong")
+        return
 
-    pass
+    if "children" in tree:
+        for child in tree["children"]:
+            dfs(child, depth + 1)
+
+
+def checkSintax(regExpression: str) -> bool:
+    print(regExpression)
+    return True
 
 
 def init() -> None:
@@ -90,6 +98,13 @@ def init() -> None:
 
     print("-" * 60 + " TREE " + "-" * 60)
     print(tree)
+
+    print("-" * 60 + " DFS " + "-" * 60)
+    dfs(tree, 0)
+
+    print("-" * 60 + " All Good " + "-" * 60)
+
+    exit()
 
 
 init()
