@@ -1,3 +1,5 @@
+import emulator
+
 def readCode() -> str:
     file_path = "code.txt"
 
@@ -24,6 +26,7 @@ def cleanCode(src: str) -> str:
         .replace(") (", ")(")
         .replace(": ", ":")
         .replace(" :", ":")
+        .lower()
     )
     return newSrc
 
@@ -72,7 +75,7 @@ def parenthesisRight(src: str) -> bool:
 def dfs(tree, depth):
     if not checkSintax(tree["value"]):
         print("Code's syntaxis is wrong")
-        return
+        return 
 
     if "children" in tree:
         for child in tree["children"]:
@@ -80,8 +83,10 @@ def dfs(tree, depth):
 
 
 def checkSintax(regExpression: str) -> bool:
+    sentence = regExpression.strip().split()
     print(regExpression)
-    return True
+    return emulator.lexer(sentence)
+
 
 
 def init() -> None:
