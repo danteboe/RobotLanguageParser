@@ -343,6 +343,14 @@ commands_dict = {
     'null': null_foo
 }
 
+#TODO crear el diccionario con los booleanos del lenguaje (facing?, blocked? etc) y 
+#una función respectiva para cada uno que verifique que los parámetros dados sean sintácticamente válidos.
+bool_dict = {}
+
+#TODO crear el diccionario con las estructuras de control del lenguaje (repeat, repeatNTimes) y 
+#una función respectiva para cada uno que verifique que los parámetros dados sean sintácticamente válidos.
+control_dict = {}
+
 def lexer(sentence:list)->bool:
     """The lexer determines whether a sentence's 'token' (the first instruction)
         is either a command, a control structure or a function call.
@@ -351,6 +359,17 @@ def lexer(sentence:list)->bool:
     token = sentence[0]
     if token in commands_dict:
         return command_lexer(token, sentence)
+    if token in bool_dict:
+        return bool_lexer(token, sentence)
+    if token in control_dict:
+        return control_lexer(token, sentence)
 
 def command_lexer(token:str, sentence:list)->bool:
     return commands_dict[token](sentence)
+
+def bool_lexer(token:str, sentence:list)->bool:
+    return bool_dict[token](sentence)
+
+def control_lexer(token:str, sentence:list)->bool:
+    return control_dict[token](sentence)
+
