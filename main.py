@@ -91,7 +91,7 @@ def checkSintax(regExpression: str) -> bool:
 
 def init() -> None:
     src = readCode()
-    src = cleanCode(src)
+    src = cleanCode(src.lower())
 
     if not parenthesisRight(src):
         return
