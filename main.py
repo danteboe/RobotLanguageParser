@@ -24,8 +24,6 @@ def cleanCode(src: str) -> str:
         .replace("( ", "(")
         .replace(" )", ")")
         .replace(") (", ")(")
-        .replace(": ", ":")
-        .replace(" :", ":")
         .lower()
     )
     return newSrc
@@ -71,21 +69,33 @@ def parenthesisRight(src: str) -> bool:
     elif l_parenthesis == 0:
         return True
 
+#Defun checks if the current value corresponds to the "defun" command. 
+#It facilitates its syntactical analysis.
+def dfs(tree, depth, defun:bool):
+    
+    token = tree["value"].strip().split()[0]
+    if token == "defunc":
+        defun = True
+        defun_parameters = [parameter for parameter in tree["children"][0]["value"].split()]
 
-def dfs(tree, depth):
-    if not checkSintax(tree["value"]):
+    if not checkSintax(tree["value"], tree["children"], defun_parameters):
         print("Code's syntaxis is wrong")
         return 
 
     if "children" in tree:
         for child in tree["children"]:
-            dfs(child, depth + 1)
+            dfs(child, depth + 1, defun)
 
 
-def checkSintax(regExpression: str) -> bool:
+def checkSintax(regExpression: str, childExp: list, defun:bool, defun_parameters=[]) -> bool:
     sentence = regExpression.strip().split()
+    cSentences = []
+    if childExp:
+        for child in childExp:
+            childSentence = child["value"].strip().split()
+            cSentences.append(childSentence)
     print(regExpression)
-    return emulator.lexer(sentence)
+    return emulator.lexer(sentence, cSentences, defun, defun_parameters)
 
 
 
@@ -105,7 +115,7 @@ def init() -> None:
     print(tree)
 
     print("-" * 60 + " DFS " + "-" * 60)
-    dfs(tree, 0)
+    dfs(tree, 0, False)
 
     print("-" * 60 + " All Good " + "-" * 60)
 

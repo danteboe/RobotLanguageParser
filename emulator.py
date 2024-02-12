@@ -5,14 +5,14 @@ functionDefinitions = {}
 
 # Numeric constants.
 constants = {
-    "Dim": -1,
-    "myXpos": -1,
-    "myYpos": -1,
-    "myChips": -1,
-    "myBalloons": -1,
-    "balloonsHere": -1,
-    "ChipsHere": -1,
-    "Spaces": -1,
+    "dim": -1,
+    "myxpos": -1,
+    "myypos": -1,
+    "mychips": -1,
+    "myballoons": -1,
+    "balloonshere": -1,
+    "chipshere": -1,
+    "spaces": -1,
 }
 
 # Direction constants
@@ -45,7 +45,7 @@ def modifyVariable(varName: str, newValue: any) -> bool:
 
     return False
 
-
+#TODO modify createFunction function so it saves the function and the respective variables
 def createFunction(funcName: str, value: any) -> bool:
     if funcName in functionDefinitions:
         return False
@@ -379,7 +379,8 @@ commands_dict = {
 
 
 def facing_bool(sentence: list) -> bool:
-    if len(sentence) == 2 and sentence[2] in directions:
+    print(sentence)
+    if len(sentence) == 2 and sentence[1] in directions:
         return True
 
     return False
@@ -394,8 +395,8 @@ def blocked_bool(sentence: list) -> bool:
 
 def canPut_bool(sentence: list) -> bool:
     if len(sentence) == 3:
-        if sentence[2] == "chips" or sentence[2] == "balloons":
-            if sentence[3].isnumeric():
+        if sentence[1] == "chips" or sentence[1] == "balloons":
+            if valid_numeric_value(sentence[2]):
                 return True
 
     return False
@@ -410,12 +411,13 @@ def canMove_bool(sentence: list) -> bool:
 
 
 def isZero_bool(sentence: list) -> bool:
-    return True
+    return (sentence[1] in constants) or (sentence[1] in variableDefinitions)
 
 
-def not_bool(sentence: list) -> bool:
-    return True
-
+def not_bool(sentence: list, childSentence:list) -> bool:
+    if len(sentence) !=1: 
+        return False
+    return childSentence[0][0] in bool_dict
 
 bool_dict = {
     "facing?": facing_bool,
@@ -423,16 +425,36 @@ bool_dict = {
     "can-put?": canPut_bool,
     "can-pick?": canPick_bool,
     "can-move?": canMove_bool,
-    "isZero?": isZero_bool,
+    "iszero?": isZero_bool,
     "not": not_bool,
 }
 
 # TODO crear el diccionario con las estructuras de control del lenguaje (repeat, repeatNTimes) y
 # una función respectiva para cada uno que verifique que los parámetros dados sean sintácticamente válidos.
-control_dict = {}
 
+def if_comm(sentence:list, childSentence: list)->bool:
+    if len(sentence) !=1:
+        return False
+    if not childSentence[0][0] in bool_dict:
+        return False
+    for i in range(1,len(childSentence)):
+        pass
+    return True
 
-def lexer(sentence: list) -> bool:
+def repeat_comm(sentence:list)->bool:
+    return valid_numeric_value[sentence[1]]
+
+#TODO Make the function so it creates the function.
+def defun_comm():
+    pass
+
+control_dict = {"if":if_comm,
+                "repeat": repeat_comm,
+                "defun": defun_comm,
+                }
+
+#TODO add declared functions recognition
+def lexer(sentence: list, children:list, defun:bool, defun_parameters:list) -> bool:
     """The lexer determines whether a sentence's 'token' (the first instruction)
     is either a command, a control structure or a function call.
     It calls the corresponding sub-lexer function.
@@ -441,18 +463,33 @@ def lexer(sentence: list) -> bool:
     if token in commands_dict:
         return command_lexer(token, sentence)
     if token in bool_dict:
-        return bool_lexer(token, sentence)
+        return bool_lexer(token, sentence, children)
     if token in control_dict:
-        return control_lexer(token, sentence)
+        return control_lexer(token, sentence, children)
+    elif token=="raiz":
+        return True
+    elif defun:
+        for parameter in sentence:
+            if parameter in defun_parameters:
+                return True
+    return False
 
 
 def command_lexer(token: str, sentence: list) -> bool:
     return commands_dict[token](sentence)
 
 
-def bool_lexer(token: str, sentence: list) -> bool:
+def bool_lexer(token: str, sentence: list, childSentence=[]) -> bool:
+   
+   if childSentence:
+    return bool_dict[token](sentence, childSentence)
+   else:
     return bool_dict[token](sentence)
 
 
-def control_lexer(token: str, sentence: list) -> bool:
-    return control_dict[token](sentence)
+def control_lexer(token: str, sentence: list, childSentence=[]) -> bool:
+    if childSentence:
+        print(childSentence)
+        return control_dict[token](sentence, childSentence)
+    else:
+        return control_dict[token](sentence)
