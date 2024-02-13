@@ -17,7 +17,15 @@ constants = {
 }
 
 # Direction constants
-directions = {":left": -1, ":right": -1, ":front": -1, ":back": -1, ":around":-1, ":up":-1, ":down":-1,}
+directions = {
+    ":left": -1,
+    ":right": -1,
+    ":front": -1,
+    ":back": -1,
+    ":around": -1,
+    ":up": -1,
+    ":down": -1,
+}
 
 # "Turn" command-specific direction constants
 t_directions = {":left": -1, ":right": -1, ":around": -1}
@@ -46,7 +54,8 @@ def modifyVariable(varName: str, newValue: any) -> bool:
 
     return False
 
-#TODO modify createFunction function so it saves the function and the respective variables
+
+# TODO modify createFunction function so it saves the function and the respective variables
 def createFunction(funcName: str, variables: list) -> bool:
     if funcName in functionDefinitions:
         return False
@@ -55,7 +64,8 @@ def createFunction(funcName: str, variables: list) -> bool:
 
     return True
 
-def valid_command(n:dict)->bool:
+
+def valid_command(n: dict) -> bool:
     if not n["value"]:
         if n["children"]:
             for i in range(len(n["children"])):
@@ -67,7 +77,12 @@ def valid_command(n:dict)->bool:
         print("Invalid syntax: empty parenthesis without subelements.")
         return False
     else:
-        return n["value"].split()[0]=="if" or n["value"].split()[0] in commands_dict or n["value"].split()[0] in functionDefinitions
+        return (
+            n["value"].split()[0] == "if"
+            or n["value"].split()[0] in commands_dict
+            or n["value"].split()[0] in functionDefinitions
+        )
+
 
 def valid_numeric_value(n: str) -> bool:
     if n.strip() not in constants and n.strip() not in local_parameters:
@@ -424,7 +439,7 @@ def canMove_bool(sentence: list) -> bool:
 
 
 def isZero_bool(sentence: list) -> bool:
-    if len(sentence)!=2:
+    if len(sentence) != 2:
         print("The isZero? boolean receives only one parameter.")
         return False
     if not valid_numeric_value(sentence[1]):
@@ -432,14 +447,15 @@ def isZero_bool(sentence: list) -> bool:
     return True
 
 
-def not_bool(sentence: list, childSentence:list) -> bool:
-    if len(sentence) !=1: 
+def not_bool(sentence: list, childSentence: list) -> bool:
+    if len(sentence) != 1:
         print("'not' operator must not have parameters outside of parenthesis.")
         return False
     if not childSentence[0]["value"].split()[0] in bool_dict:
         print(f"Invalid boolean value: '{childSentence[0]['value']}'")
         return False
     return True
+
 
 bool_dict = {
     "facing?": facing_bool,
@@ -454,76 +470,91 @@ bool_dict = {
 # TODO crear el diccionario con las estructuras de control del lenguaje (repeat, repeatNTimes) y
 # una función respectiva para cada uno que verifique que los parámetros dados sean sintácticamente válidos.
 
-def if_comm(sentence:list, childSentence: list)->bool:
-    if len(sentence) !=1:
+
+def if_comm(sentence: list, childSentence: list) -> bool:
+    if len(sentence) != 1:
         print("Invalid sentence length for if operator.")
         return False
-    if 1>len(childSentence):
+    if 1 > len(childSentence):
         print("Too few arguments for the 'if' conditional.")
         return False
     if not childSentence[0]["value"].split()[0] in bool_dict:
         print(f"Invalid boolean value: {childSentence[0]['value']}")
         return False
-    for i in range(1,len(childSentence)):
+    for i in range(1, len(childSentence)):
         if childSentence[0]:
             if not valid_command(childSentence[i]):
                 return False
     return True
 
-def repeat_comm(sentence:list, childSentence:list)->bool:
 
-    if len(childSentence)!=1 or len(sentence)!=2:
+def repeat_comm(sentence: list, childSentence: list) -> bool:
+
+    if len(childSentence) != 1 or len(sentence) != 2:
         print("More parameters than expected for the repeat function.")
         return False
     return valid_numeric_value(sentence[1]) and valid_command(childSentence[0])
 
-#TODO Make the function so it creates the function.
-def defun_comm(sentence:list, childSentence:list)->bool:
 
-    if len(sentence) !=2 and len(childSentence<2):
+# TODO Make the function so it creates the function.
+def defun_comm(sentence: list, childSentence: list) -> bool:
+
+    if len(sentence) != 2 and len(childSentence) < 2:
         print("Invalid syntax for function creation.")
         return
-    return createFunction(sentence[1],childSentence[0]["value"].split())
+    return createFunction(sentence[1], childSentence[0]["value"].split())
 
-def defun_p_foo(defun:bool, defun_parameters:list, local_parameters:dict)->None:
+
+def defun_p_foo(defun: bool, defun_parameters: list, local_parameters: dict) -> None:
     """
-    This function populates a dictionary with all the local parameters that should 
+    This function populates a dictionary with all the local parameters that should
     be accessible inside of a function declaration.
     """
     if defun and not local_parameters:
         for parameter in defun_parameters:
-            local_parameters[parameter]=-1
+            local_parameters[parameter] = -1
     elif not defun:
         local_parameters = []
 
-def loop_comm(sentence:list, childSentence:list)->bool:
-    if len(sentence)!=1:
-        print(f"Invalid syntax for the 'loop' command: '{' '.join(sentence)}'. The 'if' conditional and the command must be inside parenthesis.")
+
+def loop_comm(sentence: list, childSentence: list) -> bool:
+    if len(sentence) != 1:
+        print(
+            f"Invalid syntax for the 'loop' command: '{' '.join(sentence)}'. The 'if' conditional and the command must be inside parenthesis."
+        )
         return False
-    if childSentence[0]["value"].split()[0]!="if" or len(childSentence[0]["value"].split())!=1:
-        print(f"Invalid parameter for the 'loop' command: '{childSentence[0]['value']}'. "
-              f"Must be followed by an 'if' conditional.")
+    if (
+        childSentence[0]["value"].split()[0] != "if"
+        or len(childSentence[0]["value"].split()) != 1
+    ):
+        print(
+            f"Invalid parameter for the 'loop' command: '{childSentence[0]['value']}'. "
+            f"Must be followed by an 'if' conditional."
+        )
         return False
     elif not valid_command(childSentence[1]):
         print(f"Invalid command: '{childSentence[1]['value']}'")
         return False
     return True
 
-control_dict = {"if":if_comm,
-                "repeat": repeat_comm,
-                "defun": defun_comm,
-                'loop': loop_comm,
-                }
 
-#TODO add declared functions recognition
-def lexer(sentence: list, children:list, defun:bool, defun_parameters:list) -> bool:
+control_dict = {
+    "if": if_comm,
+    "repeat": repeat_comm,
+    "defun": defun_comm,
+    "loop": loop_comm,
+}
+
+
+# TODO add declared functions recognition
+def lexer(sentence: list, children: list, defun: bool, defun_parameters: list) -> bool:
     """The lexer determines whether a sentence's 'token' (the first instruction)
     is either a command, a control structure or a function call.
     It calls the corresponding sub-lexer function.
     """
     defun_p_foo(defun, defun_parameters, local_parameters)
-    
-    try: 
+
+    try:
         token = sentence[0]
     except:
         token = None
@@ -533,22 +564,26 @@ def lexer(sentence: list, children:list, defun:bool, defun_parameters:list) -> b
         return bool_lexer(token, sentence, children)
     elif token in control_dict:
         return control_lexer(token, sentence, children)
-    elif token=="raiz":
+    elif token == "raiz":
         return True
     elif token in functionDefinitions:
-        if len(sentence)-1 == len(functionDefinitions[token]):
+        if len(sentence) - 1 == len(functionDefinitions[token]):
             return True
         else:
-            print(f"The {token} function requires {len(functionDefinitions[token])} parameters. {len(sentence)-1} were provided")
+            print(
+                f"The {token} function requires {len(functionDefinitions[token])} parameters. {len(sentence)-1} were provided"
+            )
     elif defun:
-        """ print("Entered defun")
-        print(sentence, local_parameters) """
+        """print("Entered defun")
+        print(sentence, local_parameters)"""
         if not token and not local_parameters:
             return True
-        else: 
+        else:
             for parameter in sentence:
                 if parameter not in local_parameters:
-                    print(f"The variable {'parameter'} is not a valid variable or function parameter.")
+                    print(
+                        f"The variable {'parameter'} is not a valid variable or function parameter."
+                    )
                     return False
             return True
     elif not token:
@@ -563,11 +598,11 @@ def command_lexer(token: str, sentence: list) -> bool:
 
 
 def bool_lexer(token: str, sentence: list, childSentence=[]) -> bool:
-   
-   if childSentence:
-    return bool_dict[token](sentence, childSentence)
-   else:
-    return bool_dict[token](sentence)
+
+    if childSentence:
+        return bool_dict[token](sentence, childSentence)
+    else:
+        return bool_dict[token](sentence)
 
 
 def control_lexer(token: str, sentence: list, childSentence=[]) -> bool:
