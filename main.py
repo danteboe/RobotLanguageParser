@@ -45,7 +45,7 @@ def createTree(src: str) -> dict:
             current_node = stack.pop()
 
         else:
-                current_node["value"] += character
+            current_node["value"] += character
 
     return tree
 
