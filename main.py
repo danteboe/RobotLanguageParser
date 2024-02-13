@@ -45,7 +45,7 @@ def createTree(src: str) -> dict:
             current_node = stack.pop()
 
         else:
-            current_node["value"] += character
+                current_node["value"] += character
 
     return tree
 
@@ -72,30 +72,32 @@ def parenthesisRight(src: str) -> bool:
 #Defun checks if the current value corresponds to the "defun" command. 
 #It facilitates its syntactical analysis.
 def dfs(tree, depth, defun:bool):
-    
-    token = tree["value"].strip().split()[0]
-    if token == "defunc":
+    try:
+        token = tree["value"].strip().split()[0]
+    except:
+        token = None
+
+    if token == "defun":
         defun = True
         defun_parameters = [parameter for parameter in tree["children"][0]["value"].split()]
+    else: 
+        defun_parameters=[]
 
-    if not checkSintax(tree["value"], tree["children"], defun_parameters):
+    if not checkSintax(tree["value"], tree["children"], defun, defun_parameters):
         print("Code's syntaxis is wrong")
         return 
 
     if "children" in tree:
         for child in tree["children"]:
-            dfs(child, depth + 1, defun)
+            if not dfs(child, depth + 1, defun):
+                return False
 
+    return True
 
-def checkSintax(regExpression: str, childExp: list, defun:bool, defun_parameters=[]) -> bool:
+def checkSintax(regExpression: str, childExp: list, defun:bool, defun_parameters:list) -> bool:
     sentence = regExpression.strip().split()
-    cSentences = []
-    if childExp:
-        for child in childExp:
-            childSentence = child["value"].strip().split()
-            cSentences.append(childSentence)
     print(regExpression)
-    return emulator.lexer(sentence, cSentences, defun, defun_parameters)
+    return emulator.lexer(sentence, childExp, defun, defun_parameters)
 
 
 
@@ -115,9 +117,8 @@ def init() -> None:
     print(tree)
 
     print("-" * 60 + " DFS " + "-" * 60)
-    dfs(tree, 0, False)
-
-    print("-" * 60 + " All Good " + "-" * 60)
+    if dfs(tree, 0, False):
+        print("-" * 60 + " All Good " + "-" * 60)
 
     exit()
 
