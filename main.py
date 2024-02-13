@@ -1,5 +1,6 @@
 import emulator
 
+
 def readCode() -> str:
     file_path = "code.txt"
 
@@ -69,9 +70,10 @@ def parenthesisRight(src: str) -> bool:
     elif l_parenthesis == 0:
         return True
 
-#Defun checks if the current value corresponds to the "defun" command. 
-#It facilitates its syntactical analysis.
-def dfs(tree, depth, defun:bool):
+
+# Defun checks if the current value corresponds to the "defun" command.
+# It facilitates its syntactical analysis.
+def dfs(tree, depth, defun: bool):
     try:
         token = tree["value"].strip().split()[0]
     except:
@@ -79,13 +81,15 @@ def dfs(tree, depth, defun:bool):
 
     if token == "defun":
         defun = True
-        defun_parameters = [parameter for parameter in tree["children"][0]["value"].split()]
-    else: 
-        defun_parameters=[]
+        defun_parameters = [
+            parameter for parameter in tree["children"][0]["value"].split()
+        ]
+    else:
+        defun_parameters = []
 
     if not checkSintax(tree["value"], tree["children"], defun, defun_parameters):
         print("Code's syntaxis is wrong")
-        return 
+        return
 
     if "children" in tree:
         for child in tree["children"]:
@@ -94,11 +98,13 @@ def dfs(tree, depth, defun:bool):
 
     return True
 
-def checkSintax(regExpression: str, childExp: list, defun:bool, defun_parameters:list) -> bool:
+
+def checkSintax(
+    regExpression: str, childExp: list, defun: bool, defun_parameters: list
+) -> bool:
     sentence = regExpression.strip().split()
     print(regExpression)
     return emulator.lexer(sentence, childExp, defun, defun_parameters)
-
 
 
 def init() -> None:
@@ -109,12 +115,14 @@ def init() -> None:
         return
 
     tree = createTree(src)
-
+    """
     print("-" * 60 + " TEXT " + "-" * 60)
     print(src)
 
     print("-" * 60 + " TREE " + "-" * 60)
     print(tree)
+
+    """
 
     print("-" * 60 + " DFS " + "-" * 60)
     if dfs(tree, 0, False):
